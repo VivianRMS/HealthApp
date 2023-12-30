@@ -109,7 +109,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
         onPressed: () async {
           if (!_selectedEmail.isEmpty) await addFriendDetails();
 
-          Navigator.pop(context);
+          Navigator.pop(context, (_selectedEmail.length > 0));
         },
         child: Icon(Icons.check_box),
       ),

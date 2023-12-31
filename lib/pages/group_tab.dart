@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:keeping_fit/pages/add_friend_page.dart';
-import 'package:keeping_fit/pages/chat_page.dart';
+import 'package:keeping_fit/pages/add_group_page.dart';
+import 'package:keeping_fit/chat/chat_page.dart';
 
 class GroupTab extends StatefulWidget {
   final String docID;
-  const GroupTab({super.key, required this.docID});
+  final Function updateParent;
+  const GroupTab({super.key, required this.docID, required this.updateParent});
 
   @override
   State<GroupTab> createState() => _GroupTabState();
@@ -18,7 +20,6 @@ class _GroupTabState extends State<GroupTab> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     myData = _fetchData();
   }
@@ -35,37 +36,100 @@ class _GroupTabState extends State<GroupTab> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'MY CHAT',
+                'MY GROUP',
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Rubik Doodle Shadow',
                     fontWeight: FontWeight.bold,
                     fontSize: 25),
               ),
-              FloatingActionButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddFriendPage(
-                              docID: widget.docID,
-                            )),
-                  );
-
-                  if (result) {
+              PopupMenuButton(
+                child: Container(
+                  padding: EdgeInsets.all(8), // Add padding around the icon
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(
+                        255, 178, 173, 173), // Background color of the button
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: Icon(Icons.add, color: Colors.white), // Icon color
+                ),
+                // icon: Icon(
+                //   Icons.add,
+                //   color: Colors.white,
+                //   size: 20,
+                // ),
+                color: Color.fromARGB(255, 158, 154, 154),
+                onSelected: (String option) async {
+                  bool result = true;
+                  switch (option) {
+                    case 'New Friend':
+                      result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddFriendPage(
+                                  docID: widget.docID,
+                                )),
+                      );
+                      break;
+                    case 'New Group':
+                      result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddGroupPage(
+                                  docID: widget.docID,
+                                )),
+                      );
+                      break;
+                  }
+                  if (result != null && result == true) {
                     setState(() {
+                      print('84');
                       myData = _fetchData();
+                      widget.updateParent();
                     });
                   }
+                  ;
                 },
-                backgroundColor: Color.fromARGB(255, 178, 173, 173),
-                mini: true,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
+                itemBuilder: (context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'New Friend',
+                    child: Text('Add Friend',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'New Group',
+                    child: Text('Add Group',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                  // Add more items here for more choices
+                ],
+              )
+              // FloatingActionButton(
+              //   onPressed: () async {
+              //     final result = await Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //           builder: (context) => AddFriendPage(
+              //                 docID: widget.docID,
+              //               )),
+              //     );
+
+              //     if (result != null && result == true) {
+              //       setState(() {
+              //         myData = _fetchData();
+              //       });
+              //     }
+              //   },
+              //   backgroundColor: Color.fromARGB(255, 178, 173, 173),
+              //   mini: true,
+              //   child: Icon(
+              //     Icons.add,
+              //     color: Colors.white,
+              //     size: 20,
+              //   ),
+              // ),
             ],
           ),
           // _buildFriendList(),
@@ -73,7 +137,7 @@ class _GroupTabState extends State<GroupTab> {
         SizedBox(
           height: 10.0,
         ),
-        _buildFriendList(),
+        _buildGroupList(),
       ]),
     );
   }
@@ -85,7 +149,7 @@ class _GroupTabState extends State<GroupTab> {
         .get();
   }
 
-  Widget _buildFriendList() {
+  Widget _buildGroupList() {
     return FutureBuilder(
         future: myData,
         builder: (context, snapshot) {
@@ -110,11 +174,11 @@ class _GroupTabState extends State<GroupTab> {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
 
-          Map<String, String> friends = {};
-          if (data['friends'] != null && data['friends'] is Map) {
-            (data['friends'] as Map).forEach((key, value) {
+          Map<String, String> groups = {};
+          if (data['groups'] != null && data['groups'] is Map) {
+            (data['groups'] as Map).forEach((key, value) {
               if (key is String && value is String) {
-                friends[key] = value;
+                groups[key] = value;
               }
             });
           }
@@ -123,9 +187,9 @@ class _GroupTabState extends State<GroupTab> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ListView(
-                children: friends.entries.map((entry) {
+                children: groups.entries.map((entry) {
                   String email = entry.key;
-                  String friend = entry.value;
+                  String groupName = entry.value;
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -140,7 +204,7 @@ class _GroupTabState extends State<GroupTab> {
                             width: 10,
                           ),
                           Text(
-                            friend.toUpperCase(),
+                            groupName.toUpperCase(),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Rubik Doodle Shadow',
@@ -155,6 +219,7 @@ class _GroupTabState extends State<GroupTab> {
                             MaterialPageRoute(
                                 builder: (context) => ChatPage(
                                       receiverUserEmail: email,
+                                      receiverUserID: groupName,
                                     )));
                       },
                       shape: RoundedRectangleBorder(

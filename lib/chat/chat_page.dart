@@ -26,7 +26,7 @@ class _ChatPageState extends State<ChatPage> {
     // only send message if there is something to send
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
-          widget.receiverUserID, _messageController.text);
+          widget.receiverUserEmail, _messageController.text);
       // clear the text controller after sending the message
       _messageController.clear();
     }
@@ -35,7 +35,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.receiverUserEmail)),
+      backgroundColor: Colors.grey.shade900,
+      appBar: AppBar(title: Text(widget.receiverUserID)),
       body: Column(children: [
         Expanded(
           child: _buildMessageList(),
@@ -51,8 +52,7 @@ class _ChatPageState extends State<ChatPage> {
   // build message list
   Widget _buildMessageList() {
     return StreamBuilder(
-        stream: _chatService.getMessages(
-            widget.receiverUserID, _firebaseAuth.currentUser!.uid),
+        stream: _chatService.getMessages(widget.receiverUserEmail),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error ${snapshot.error}');
@@ -75,7 +75,7 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
     // align the messages to the right if the sender is the current user, otherwise to the left
-    var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
+    var alignment = (data['senderEmail'] == _firebaseAuth.currentUser!.email)
         ? Alignment.centerRight
         : Alignment.centerLeft;
 
@@ -85,19 +85,26 @@ class _ChatPageState extends State<ChatPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
             crossAxisAlignment:
-                (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                (data['senderEmail'] == _firebaseAuth.currentUser!.email)
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
             mainAxisAlignment:
-                (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                (data['senderEmail'] == _firebaseAuth.currentUser!.email)
                     ? MainAxisAlignment.end
                     : MainAxisAlignment.start,
             children: [
-              Text(data['senderEmail']),
+              Text(
+                data['senderEmail'],
+                style: TextStyle(color: Colors.white),
+              ),
               SizedBox(
                 height: 5,
               ),
-              ChatBubble(message: data['message'])
+              ChatBubble(
+                message: data['message'],
+                receiverOrSender:
+                    (data['senderEmail'] == _firebaseAuth.currentUser!.email),
+              )
             ]),
       ),
     );

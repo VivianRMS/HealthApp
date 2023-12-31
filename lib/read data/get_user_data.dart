@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:keeping_fit/pages/goals_tab.dart';
 import 'package:keeping_fit/pages/group_tab.dart';
 import 'package:keeping_fit/pages/set_goal_page.dart';
+import 'package:keeping_fit/pages/show_friends_page.dart';
 
 class GetUserData extends StatefulWidget {
   final String docID;
@@ -15,11 +16,13 @@ class GetUserData extends StatefulWidget {
 class _GetUserDataState extends State<GetUserData>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  Future<DocumentSnapshot<Map<String, dynamic>>>? myData;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    myData = _fetchData();
   }
 
   @override
@@ -28,15 +31,40 @@ class _GetUserDataState extends State<GetUserData>
     super.dispose();
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>>? _fetchData() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.docID)
+        .get();
+  }
+
+  void updateUserData() {
+    setState(() {
+      myData = _fetchData();
+    });
+  }
+
+  int getFriendsCount(dynamic friendsData) {
+    if (friendsData == null) {
+      return 0; // Return 0 if friendsData is null
+    } else if (friendsData is Map) {
+      return friendsData.length;
+    } else if (friendsData is List) {
+      return friendsData.length;
+    } else {
+      return 0; // Handle other unexpected cases
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
-        future: users.doc(widget.docID).get(),
+        future: myData,
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
+            int friendsCount = getFriendsCount(data['friends']);
             return Scaffold(
                 backgroundColor: Colors.grey.shade900,
                 body: SafeArea(
@@ -117,23 +145,34 @@ class _GetUserDataState extends State<GetUserData>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            '0',
-                                            style: TextStyle(
-                                                // fontFamily: 'Exo',
-                                                fontSize: 20,
-                                                color: Colors.white),
-                                          ),
-                                          Text(
-                                            'Following',
-                                            style: TextStyle(
-                                                // fontFamily: 'Exo',
-                                                fontSize: 15,
-                                                color: Colors.white),
-                                          ),
-                                        ],
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ShowFriendsPage(
+                                                          docID:
+                                                              widget.docID)));
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              '$friendsCount',
+                                              style: TextStyle(
+                                                  // fontFamily: 'Exo',
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                            ),
+                                            Text(
+                                              'Following',
+                                              style: TextStyle(
+                                                  // fontFamily: 'Exo',
+                                                  fontSize: 15,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -195,7 +234,10 @@ class _GetUserDataState extends State<GetUserData>
                             controller: _tabController,
                             children: [
                               GoalsTab(docID: widget.docID),
-                              GroupTab(docID: widget.docID),
+                              GroupTab(
+                                docID: widget.docID,
+                                updateParent: updateUserData,
+                              ),
                               Center(
                                 child: Text(
                                   'ACHIEVEMENT',

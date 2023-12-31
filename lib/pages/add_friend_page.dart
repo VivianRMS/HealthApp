@@ -19,12 +19,20 @@ class _AddFriendPageState extends State<AddFriendPage> {
   final Map<String, String> friends = {};
 
   Future addFriendDetails() async {
-    await FirebaseFirestore.instance.collection('users').doc(widget.docID).set({
-      'friends': _selectedEmail,
-    }, SetOptions(merge: true));
+    for (var entry in _selectedEmail.entries) {
+      String email = entry.key;
+      // Create a new map from _selectedEmail excluding the current element
+      Map<String, String> newFriends = Map.from(_selectedEmail)..remove(email);
+      print(newFriends);
+
+      // Update the Firestore document for the current element
+      await FirebaseFirestore.instance.collection('users').doc(email).set({
+        'friends': newFriends,
+      }, SetOptions(merge: true));
+    }
   }
 
-  Future<Map<String, String>> getFriends() async {
+  Future<Map<String, String>> getNewFriends() async {
     try {
       var currentUserDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -34,6 +42,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
       if (currentUserDoc.exists && currentUserDoc.data() != null) {
         Map<String, dynamic> data =
             currentUserDoc.data() as Map<String, dynamic>;
+        _selectedEmail[widget.docID] = data['usrname'];
         if (data['friends'] != null && data['friends'] is Map) {
           (data['friends'] as Map).forEach((key, value) {
             if (key is String && value is String) {
@@ -83,7 +92,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
                 height: 10.0,
               ),
               FutureBuilder(
-                  future: getFriends(),
+                  future: getNewFriends(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Text(
@@ -107,9 +116,12 @@ class _AddFriendPageState extends State<AddFriendPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          if (!_selectedEmail.isEmpty) await addFriendDetails();
+          print(_selectedEmail);
+          if (!_selectedEmail.isEmpty && _selectedEmail.length > 1)
+            await addFriendDetails();
 
-          Navigator.pop(context, (_selectedEmail.length > 0));
+          Navigator.pop(
+              context, (!_selectedEmail.isEmpty && _selectedEmail.length > 1));
         },
         child: Icon(Icons.check_box),
       ),

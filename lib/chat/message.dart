@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
   final String senderEmail;
-  final String receiverEmail;
+  final List<String> receiverEmail;
   final String message;
   final Timestamp timestamp;
 

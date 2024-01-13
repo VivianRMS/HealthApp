@@ -36,7 +36,21 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
-      appBar: AppBar(title: Text(widget.receiverUserID)),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 178, 173, 173),
+        title: Text(
+          widget.receiverUserID,
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Icon(Icons.add),
+            ),
+          )
+        ],
+      ),
       body: Column(children: [
         Expanded(
           child: _buildMessageList(),

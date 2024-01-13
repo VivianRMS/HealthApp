@@ -60,7 +60,7 @@ class _GroupTabState extends State<GroupTab> {
                 // ),
                 color: Color.fromARGB(255, 158, 154, 154),
                 onSelected: (String option) async {
-                  bool result = true;
+                  bool? result = true;
                   switch (option) {
                     case 'New Friend':
                       result = await Navigator.push(

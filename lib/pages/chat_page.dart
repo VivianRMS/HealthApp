@@ -54,7 +54,8 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageList() {
     return StreamBuilder(
         stream: _chatService.getMessages(
-            widget.receiverUserEmail, _auth.currentUser!.email.toString()),
+          widget.receiverUserEmail,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error ${snapshot.error}');

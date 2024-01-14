@@ -148,13 +148,11 @@ class _AddFriendPageState extends State<AddGroupPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          if (!_selectedEmail.isEmpty && _selectedEmail.length > 2)
+          if (!_selectedEmail.isEmpty && _selectedEmail.length >= 2)
             await addGroupDetails();
 
-          print((!_selectedEmail.isEmpty && _selectedEmail.length > 2));
-
           Navigator.pop(
-              context, (!_selectedEmail.isEmpty && _selectedEmail.length > 2));
+              context, (!_selectedEmail.isEmpty && _selectedEmail.length >= 2));
         },
         child: Icon(Icons.check_box),
       ),

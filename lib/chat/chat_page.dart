@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:keeping_fit/chat/chat_bubble.dart';
 import 'package:keeping_fit/chat/message_service.dart';
 import 'package:keeping_fit/chat/my_text_field.dart';
+import 'package:keeping_fit/pages/group_goal_page.dart';
 
 class ChatPage extends StatefulWidget {
   final String receiverUserEmail;
@@ -43,7 +44,10 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () async {
+              await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => GroupGoalPage()));
+            },
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Icon(Icons.add),

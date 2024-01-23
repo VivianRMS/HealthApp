@@ -1,17 +1,18 @@
-# keeping_fit
-
-A new Flutter project.
-
-## Getting Started
+# HealthGoal App
 
 This project is under construction.
+
 You can run it with "flutter run"
 
-A few resources to get you started if this is your first Flutter project:
+If you want to collaborate, don't hesitate to email us!
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Idea
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+It's hard for ourselves to stick to regular exercise or healthy diet. So, ... we need to be supervised!
+
+### Who will supervise us?
+People with same concerns as we do! Namely, we'll form health groups to kepp us on track!
+
+
+### How will one be supervised?
+Obey reward and punishment rules set by all group members!

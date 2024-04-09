@@ -64,6 +64,7 @@ class _ShowFriendsPageState extends State<ShowFriendsPage> {
                   List<String> ids = [widget.docID, email];
                   ids.sort();
                   String chatRoomId = ids.join("_");
+                  // print("Room ID: " + chatRoomId);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: ListTile(
@@ -91,7 +92,7 @@ class _ShowFriendsPageState extends State<ShowFriendsPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatPage(
-                                      receiverUserEmail: email,
+                                      receiverUserEmail: chatRoomId,
                                       receiverUserID: friend,
                                     )));
                       },

@@ -197,7 +197,7 @@ class _GroupTabState extends State<GroupTab> {
                       title: Row(
                         children: [
                           Icon(
-                            Icons.person,
+                            Icons.group,
                             color: Color.fromARGB(255, 178, 173, 173),
                           ),
                           SizedBox(

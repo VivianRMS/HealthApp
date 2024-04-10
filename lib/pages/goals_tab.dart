@@ -31,7 +31,6 @@ class _GoalsTabState extends State<GoalsTab> {
 
   void refreshGoals() async {
     setState(() {
-      // 使用新的Future来强制FutureBuilder重新获取数据
       _goalsFuture = FirebaseFirestore.instance
           .collection('users')
           .doc(widget.docID)
@@ -60,51 +59,62 @@ class _GoalsTabState extends State<GoalsTab> {
 
 // create goal name and delete
   Widget createListTile(BuildContext context, QueryDocumentSnapshot doc) {
-    return ListTile(
-      title: Row(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
         children: [
-          IconButton(
-            onPressed: () async {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Confirm delete'),
-                      content: Text(
-                          'Are you sure to delete this goal including all plans under it'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            deleteGoal(doc);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Delete'),
-                        ),
-                      ],
-                    );
-                  });
-            },
-            icon: Icon(Icons.delete),
+          Icon(
+            Icons.local_fire_department_sharp,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
-          Expanded(
-            child: Text(
-              doc['goalName'],
-              style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Rainbow',
-                  fontSize: 28.0),
-            ),
+          SizedBox(
+            width: 10,
           ),
+          // Expanded(
+          //   child:
+          Text(
+            doc['goalName'],
+            style: TextStyle(
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontWeight: FontWeight.bold,
+                // fontFamily: 'Rainbow',
+                fontFamily: 'Rubik Doodle Shadow',
+                fontSize: 20.0),
+          ),
+          // ),
+          // IconButton(
+          //   onPressed: () async {
+          //     showDialog(
+          //         context: context,
+          //         builder: (BuildContext context) {
+          //           return AlertDialog(
+          //             title: Text('Confirm delete'),
+          //             content: Text(
+          //                 'Are you sure to delete this goal including all plans under it'),
+          //             actions: <Widget>[
+          //               TextButton(
+          //                 onPressed: () {
+          //                   Navigator.of(context).pop();
+          //                 },
+          //                 child: Text('Cancel'),
+          //               ),
+          //               TextButton(
+          //                 onPressed: () {
+          //                   deleteGoal(doc);
+          //                   Navigator.of(context).pop();
+          //                 },
+          //                 child: Text('Delete'),
+          //               ),
+          //             ],
+          //           );
+          //         });
+          //   },
+          //   icon: Icon(Icons.delete),
+          // ),
         ],
       ),
     );
+    // );
   }
 
 // clock in
@@ -381,80 +391,83 @@ class _GoalsTabState extends State<GoalsTab> {
       headerBuilder: (BuildContext context, bool isExpanded) {
         return createListTile(context, doc);
       },
-      body: FutureBuilder<QuerySnapshot>(
-        future: doc.reference.collection('plans').get(),
-        builder: (context, PlansSnapshot) {
-          if (PlansSnapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-          if (PlansSnapshot.hasData && PlansSnapshot.data!.docs.isNotEmpty) {
-            return Column(
-              children: PlansSnapshot.data!.docs.map((planDoc) {
-                Map<String, dynamic> plansData =
-                    planDoc.data() as Map<String, dynamic>;
-                // print(plansData['select']);
-                if (plansData['select'] == 'frequency') {
-                  return GestureDetector(
-                    onTap: () async {
-                      await SleepPunchPlan(context, planDoc);
-                    },
-                    child: Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(136, 239, 205, 221),
-                        border: Border.all(color: Colors.grey, width: 2.0),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        title: createPlanContext(context, doc, plansData,
-                            widget.docID, planDoc, doc.id),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Plan Times: ${plansData['minimumCompletion'].toString()},Completed Times:${plansData['complete'].toString()}'),
-                            Text(
-                                'due date: ${DateFormat('yyyy-MM-dd').format(plansData['whenToEnd'].toDate())}'),
-                          ],
+      body: Padding(
+        padding: EdgeInsets.symmetric(vertical: 5),
+        child: FutureBuilder<QuerySnapshot>(
+          future: doc.reference.collection('plans').get(),
+          builder: (context, PlansSnapshot) {
+            if (PlansSnapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (PlansSnapshot.hasData && PlansSnapshot.data!.docs.isNotEmpty) {
+              return Column(
+                children: PlansSnapshot.data!.docs.map((planDoc) {
+                  Map<String, dynamic> plansData =
+                      planDoc.data() as Map<String, dynamic>;
+                  // print(plansData['select']);
+                  if (plansData['select'] == 'frequency') {
+                    return GestureDetector(
+                      onTap: () async {
+                        await SleepPunchPlan(context, planDoc);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 5.0),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(136, 239, 205, 221),
+                          border: Border.all(color: Colors.grey, width: 2.0),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: ListTile(
+                          title: createPlanContext(context, doc, plansData,
+                              widget.docID, planDoc, doc.id),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Plan Times: ${plansData['minimumCompletion'].toString()},Completed Times:${plansData['complete'].toString()}'),
+                              Text(
+                                  'due date: ${DateFormat('yyyy-MM-dd').format(plansData['whenToEnd'].toDate())}'),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                } else {
-                  return GestureDetector(
-                    onTap: () async {
-                      await DurationPunch(context, planDoc);
-                    },
-                    child: Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(136, 239, 205, 221),
-                        border: Border.all(color: Colors.grey, width: 2.0),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        title: createPlanContext(context, doc, plansData,
-                            widget.docID, planDoc, doc.id),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Goal Duration: ${plansData['duration'].toString()},Completed:${plansData['completeduration'].toString()}'),
-                            Text(
-                                'due date: ${DateFormat('yyyy-MM-dd').format(plansData['whenToEnd'].toDate())}'),
-                          ],
+                    );
+                  } else {
+                    return GestureDetector(
+                      onTap: () async {
+                        await DurationPunch(context, planDoc);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 5.0),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(136, 239, 205, 221),
+                          border: Border.all(color: Colors.grey, width: 2.0),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: ListTile(
+                          title: createPlanContext(context, doc, plansData,
+                              widget.docID, planDoc, doc.id),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Goal Duration: ${plansData['duration'].toString()},Completed:${plansData['completeduration'].toString()}'),
+                              Text(
+                                  'due date: ${DateFormat('yyyy-MM-dd').format(plansData['whenToEnd'].toDate())}'),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }
-              }).toList(),
-            );
-          }
-          return noPlanWidget(context, doc, widget.docID, doc.id);
-        },
+                    );
+                  }
+                }).toList(),
+              );
+            }
+            return noPlanWidget(context, doc, widget.docID, doc.id);
+          },
+        ),
       ),
       isExpanded: _isOpen![index],
     );

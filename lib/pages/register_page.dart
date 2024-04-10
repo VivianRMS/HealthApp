@@ -31,15 +31,15 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void showAlertDialog(String message){
+  void showAlertDialog(String message) {
     showDialog(
-      context: context, 
+      context: context,
       builder: (context) => AlertDialog(
         title: Text('Warning'),
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pop();
             },
             child: Text('OK'),
@@ -74,8 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
       showAlertDialog('Confirm Password is required');
       return;
     }
-    
-  
+
     if (passwordConfirmed()) {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -104,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'sex': sex,
       'age': birthdate,
       'score': 0,
-      'friends': {}
+      'friends': {'ai': 'Fiteness Helper'}
     });
   }
 
@@ -115,7 +114,8 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Icon(
                 Icons.sports,
                 size: 100,
@@ -146,7 +146,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.white)),
@@ -243,7 +244,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.white)),
@@ -267,7 +269,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.white)),
@@ -291,7 +294,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 31, 30, 30))),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.white)),
@@ -307,8 +311,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: GestureDetector(
                     onTap: signUp,
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 25.0, vertical: 15.0),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12.0),
                           border: Border.all(width: 2.0, color: Colors.white)),
